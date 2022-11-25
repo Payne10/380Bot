@@ -16,13 +16,14 @@ Client_Secret = 'RrPj4LY60uhrF7VGXsXEkSetRYOFj0AkzM2g-i2SQg1tkWmJV6'
 
 #TomTom Traffic API Key
 apiKey = "cbSYhP2tme3eZ8tXyzL3vixSxoDsBbM7"
-
-bbox = "41.66380868562328,-91.65740394562818,41.920630394935166,-91.64610336406754"
-
+#IC bbox
+bbox = "41.58617417579829,-91.64879397872465,41.71148990460776,-91.40628673266643"
+#i-380 bbox
+#bbox = "41.73046072677655,-91.67871333789104,41.89526012747091,-91.6466126604008"
 response = requests.get('https://api.tomtom.com/traffic/services/4/incidentDetails/s3/'+bbox+'/22/-1/json?key='+apiKey+'&projection=EPSG4326&originalPosition=true')
 
 dict = json.loads(response.content)
-print(dict)
+#print(dict)
 keys = dict.keys()
 values = dict.values()
 
@@ -38,12 +39,23 @@ for item in items:
 
 df = pd.DataFrame(values)
 df = df["poi"].apply(pd.Series).unstack()
-print(df)
+#print(df)
+
+def nullCheck(df):
+    if df['poi'] == '':
+        return "Nothing to Report."
+    else:
+        pass
+
+
+
+    
 
 collector = []
 counter=0
+
 for block in df:
-    counter += 1
+    counter = counter + 1
     row = OrderedDict()
     row['INCIDENT_ID'] = block['id']
     row['LONGITUDE'] = block['p'].get('x','')
@@ -57,4 +69,5 @@ for block in df:
     row['LENGTH_METERS'] = block['l']
 collector.append(row)
 pdf = pd.DataFrame(collector)
-print(pdf)
+#print(block['id'])
+print("There is " +str(block['d'])+ " from "+str(block['f']+ "to "+str(block['t'])))
